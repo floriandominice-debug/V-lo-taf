@@ -27,3 +27,20 @@ messaging.onBackgroundMessage(function(payload) {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close(); // Ferme la notification qui a été cliquée
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+      // Si l'application est déjà ouverte dans un onglet, on l'active
+      for (const client of clientList) {
+        if ('focus' in client) return client.focus();
+      }
+      // Sinon, on ouvre un nouvel onglet vers l'accueil de l'application
+      if (clients.openWindow) {
+        return clients.openWindow('/');
+      }
+    })
+  );
+});
+

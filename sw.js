@@ -18,29 +18,6 @@ messaging.onBackgroundMessage(function(payload) {
   console.log('📬 Notification reçue en arrière-plan:', payload);
 
   const notificationTitle = payload.notification?.title || 'Vélo Taf';
-  const notificationOptions = {
-    body: payload.notification?.body || 'Vous avez un nouveau message',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    vibrate: [200, 100, 200]
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close(); // Ferme la notification qui a été cliquée
-
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-      // Si l'application est déjà ouverte dans un onglet, on l'active
-      for (const client of clientList) {
-        if ('focus' in client) return client.focus();
-      }
-      // Sinon, on ouvre un nouvel onglet vers l'accueil de l'application
-      if (clients.openWindow) {
-        return clients.openWindow('/');
-      }
-    })
-  );
-});
-
+  
+  // Utilisation d'une URL absolue pour éviter les 404 silencieux sur Android
+  const iconUrl = self.location.origin + '/icon-192.png';Aucune réponse

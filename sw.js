@@ -13,14 +13,16 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
+// Gestion des notifications en arrière-plan
 messaging.onBackgroundMessage(function(payload) {
   console.log('📬 Notification reçue en arrière-plan:', payload);
-  
+
   const notificationTitle = payload.notification?.title || 'Vélo Taf';
   const notificationOptions = {
     body: payload.notification?.body || 'Vous avez un nouveau message',
     icon: '/icon-192.png',
-    badge: '/icon-192.png'
+    badge: '/icon-192.png',
+    vibrate: [200, 100, 200]
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

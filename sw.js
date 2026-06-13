@@ -19,5 +19,33 @@ messaging.onBackgroundMessage(function(payload) {
 
   const notificationTitle = payload.notification?.title || 'Vélo Taf';
   
-  // Utilisation d'une URL absolue pour éviter les 404 silencieux sur Android
-  const iconUrl = self.location.origin + '/icon-192.png';Aucune réponse
+  // Utilisation d'une URL absolue pour éviter les 404 de l'icône sur Android
+  const iconUrl = self.location.origin + '/icon-192.png';
+
+  const notificationOptions = {
+    body: payload.notification?.body || 'Vous avez un nouveau message',
+    icon: iconUrl,
+    badge: iconUrl,
+    vibrate: [200, 100, 200]
+  };
+
+  // RETOURNER la promesse est obligatoire pour qu'Android n'interrompe pas l'affichage
+  return self.registration.showNotification(notificationTitle, notificationOptions)
+    .then(() => console.log('✅ Notification dessinée à l\'écran par le SW'))
+    .catch(err => console.error('❌ Erreur d\'affichage de la notification :', err));
+});
+
+// Écouteur pour ouvrir l'application au clic sur la notification
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+      for (const client of clientList) {
+        if ('focus' in client) return client.focus();
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('/');
+      }
+    })
+  );
+});

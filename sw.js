@@ -1,41 +1,26 @@
-const CACHE_NAME = 'velo-taf-v2';
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(['./', 'index.html']))
-  );
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyC7zdet_pm9VN6HRF7VDsvoj1jROYtWuVk",
+  authDomain: "velo-taf-notif.firebaseapp.com",
+  projectId: "velo-taf-notif",
+  storageBucket: "velo-taf-notif.firebasestorage.app",
+  messagingSenderId: "288912454846",
+  appId: "1:288912454846:web:99f7678941e49ba2fadaef"
+};
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
-});
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
 
-// === NOUVEAU : Gestion des Notifications Push ===
-self.addEventListener('push', function(event) {
-  const data = event.data.json();
+messaging.onBackgroundMessage(function(payload) {
+  console.log('Notification reçue en arrière-plan:', payload);
   
-  const options = {
-    body: data.body || 'Nouveau message',
-    icon: 'icon-192.png',
-    badge: 'icon-192.png',
-    vibrate: [100, 50, 100],
-    data: {
-      url: data.url || './'
-    }
+  const notificationTitle = payload.notification.title || 'Vélo Taf';
+  const notificationOptions = {
+    body: payload.notification.body || '',
+    icon: '/icon-192.png'
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Vélo Taf', options)
-  );
-});
-
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  );
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });

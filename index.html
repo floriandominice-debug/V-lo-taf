@@ -7,7 +7,6 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="icon" href="icon-192.png">
 
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -18,8 +17,6 @@
             style="width:100%; height:100%; border:none;"></iframe>
 
     <script>
-        console.log("🚀 Script chargé");
-
         const firebaseConfig = {
           apiKey: "AIzaSyC7zdet_pm9VN6HRF7VDsvoj1jROYtWuVk",
           authDomain: "velo-taf-notif.firebaseapp.com",
@@ -32,34 +29,20 @@
         firebase.initializeApp(firebaseConfig);
         const messaging = firebase.messaging();
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-                console.log('✅ Service Worker OK');
-                messaging.useServiceWorker(reg);
-            });
-        }
-
-        // Récupération du Token
-        function getFCMToken() {
-            console.log("📢 Récupération du Token FCM...");
-            messaging.getToken()
-                .then(token => {
-                    console.log('🔑 TOKEN FCM :', token);
-                    alert("✅ TOKEN RÉCUPÉRÉ !\nOuvre la console pour le voir");
-                })
-                .catch(err => {
-                    console.error('❌ Erreur Token:', err);
-                    alert("Erreur Token: " + err.message);
-                });
-        }
-
-        // Essayer plusieurs fois
-        window.addEventListener('load', () => {
-            console.log("📄 Page chargée");
-            setTimeout(getFCMToken, 2000);
-            setTimeout(getFCMToken, 5000);
-            setTimeout(getFCMToken, 8000);
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            console.log('✅ SW OK');
+            messaging.useServiceWorker(reg);
         });
+
+        // Récupération forcée du token
+        messaging.getToken()
+            .then(token => {
+                console.log('🔑 TOKEN FCM :', token);
+                alert("TOKEN RÉCUPÉRÉ ! Vérifie la console");
+            })
+            .catch(err => {
+                console.error('❌ Erreur Token:', err);
+            });
     </script>
 </body>
 </html>

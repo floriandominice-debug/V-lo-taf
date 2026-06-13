@@ -29,20 +29,25 @@
         firebase.initializeApp(firebaseConfig);
         const messaging = firebase.messaging();
 
-        navigator.serviceWorker.register('sw.js').then(reg => {
-            console.log('✅ SW OK');
-            messaging.useServiceWorker(reg);
-        });
-
-        // Récupération forcée du token
-        messaging.getToken()
-            .then(token => {
-                console.log('🔑 TOKEN FCM :', token);
-                alert("TOKEN RÉCUPÉRÉ ! Vérifie la console");
-            })
-            .catch(err => {
-                console.error('❌ Erreur Token:', err);
-            });
+        // Enregistrement forcé de TON Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => {
+                    console.log('✅ Service Worker personnalisé enregistré');
+                    messaging.useServiceWorker(reg);
+                    console.log('🔗 Firebase lié au SW personnalisé');
+                    
+                    // Récupération du token
+                    return messaging.getToken();
+                })
+                .then(token => {
+                    console.log('🔑 TOKEN FCM :', token);
+                    if (token) alert("✅ Token récupéré ! Vérifie la console");
+                })
+                .catch(err => {
+                    console.error('❌ Erreur :', err);
+                });
+        }
     </script>
 </body>
 </html>

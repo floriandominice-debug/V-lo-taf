@@ -37,32 +37,24 @@
                 .then(reg => {
                     console.log('✅ Service Worker enregistré avec succès');
                     messaging.useServiceWorker(reg);
-                    console.log('🔗 Service Worker lié à Firebase');
                 })
-                .catch(err => console.error('❌ Erreur Service Worker:', err));
-        } else {
-            console.error('❌ Service Worker non supporté');
+                .catch(err => console.error('❌ Erreur SW:', err));
         }
 
-        function askNotificationPermission() {
-            console.log("📢 Demande de permission en cours...");
-            messaging.requestPermission()
-                .then(() => {
-                    console.log("✅ Permission accordée");
-                    return messaging.getToken();
-                })
-                .then(token => {
-                    console.log('🔑 TOKEN FCM :', token);
-                    alert("Token récupéré ! Vérifie la console.");
-                })
-                .catch(err => {
-                    console.error('❌ Erreur permission/token:', err);
-                });
+        async function getToken() {
+            try {
+                console.log("📢 Demande de Token en cours...");
+                const token = await messaging.getToken();
+                console.log('🔑 TOKEN FCM :', token);
+                alert("✅ Token récupéré !\nVérifie la console (F12)");
+            } catch (err) {
+                console.error('❌ Erreur lors de la récupération du token:', err);
+            }
         }
 
         window.addEventListener('load', () => {
             console.log("📄 Page chargée");
-            setTimeout(askNotificationPermission, 2000);
+            setTimeout(getToken, 3000);
         });
     </script>
 </body>

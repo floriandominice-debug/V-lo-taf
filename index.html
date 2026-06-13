@@ -34,11 +34,13 @@
             navigator.serviceWorker.register('sw.js')
                 .then(reg => {
                     console.log('✅ Service Worker personnalisé enregistré');
-                    messaging.useServiceWorker(reg);
-                    console.log('🔗 Firebase lié au SW personnalisé');
+                    console.log('🔗 Liaison de Firebase au SW en cours de récupération du token...');
                     
-                    // Récupération du token
-                    return messaging.getToken();
+                    // MODIFICATION ICI : On associe directement le Service Worker enregistré dans getToken()
+                    return messaging.getToken({
+                        serviceWorkerRegistration: reg
+                        // vapidKey: "VOTRE_CLE_VAPID_PUBLIQUE" // Optionnel mais fortement recommandé
+                    });
                 })
                 .then(token => {
                     console.log('🔑 TOKEN FCM :', token);

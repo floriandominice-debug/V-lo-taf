@@ -43,9 +43,9 @@
                     });
                 })
                 .then(token => {
-                    console.log('🔑 TOKEN FCM :', token);
-                    if (token) alert("✅ Token récupéré ! Vérifie la console");
-                })
+    // Le token s'affiche toujours discrètement dans votre console de développement (F12)
+    console.log('🔑 TOKEN FCM :', token);
+})
                 .catch(err => {
                     console.error('❌ Erreur :', err);
                 });

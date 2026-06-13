@@ -10,39 +10,58 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="icon" href="icon-192.png">
+
+    <!-- Firebase SDK (version compatible) -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
 </head>
 <body style="margin:0; padding:0; height:100vh;">
     <iframe src="https://script.google.com/macros/s/AKfycbyZV60YLn8GXdiZuR51VNaD5WDXaiYr18w4m0-w8ynwNVRun7HF3WvuZ516BnRJ5Ygjjw/exec"
             style="width:100%; height:100%; border:none;">
     </iframe>
 
-    <!-- Service Worker + Notifications -->
     <script>
+        // === TON CONFIG FIREBASE ===
+        const firebaseConfig = {
+          apiKey: "AIzaSyC7zdet_pm9VN6HRF7VDsvoj1jROYtWuVk",
+          authDomain: "velo-taf-notif.firebaseapp.com",
+          projectId: "velo-taf-notif",
+          storageBucket: "velo-taf-notif.firebasestorage.app",
+          messagingSenderId: "288912454846",
+          appId: "1:288912454846:web:99f7678941e49ba2fadaef"
+        };
+
+        // Initialisation Firebase
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        // Enregistrement Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('✅ Service Worker enregistré'))
-                .catch(err => console.log('❌ SW erreur:', err));
+                .then(reg => {
+                    console.log('✅ Service Worker enregistré');
+                    messaging.useServiceWorker(reg);
+                })
+                .catch(err => console.log('❌ Erreur SW:', err));
         }
 
-        // Demande de permission pour les notifications
+        // Demande de permission notifications
         function askNotificationPermission() {
-            if (!('Notification' in window)) {
-                console.log("Notifications non supportées");
-                return;
-            }
-
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    console.log('✅ Notifications autorisées par l\'utilisateur');
-                } else {
-                    console.log('❌ Notifications refusées');
-                }
-            });
+            messaging.requestPermission()
+                .then(() => {
+                    return messaging.getToken();
+                })
+                .then(token => {
+                    console.log('🔑 Token FCM :', token);
+                    // Tu peux copier ce token pour tester
+                })
+                .catch(err => {
+                    console.log('❌ Erreur notification:', err);
+                });
         }
 
-        // Demander après le chargement de la page
         window.addEventListener('load', () => {
-            setTimeout(askNotificationPermission, 3000);
+            setTimeout(askNotificationPermission, 4000);
         });
     </script>
 </body>
